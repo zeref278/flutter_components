@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
+        primaryColor: const Color(0xFF006FFD),
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -50,6 +51,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   void _incrementCounter() {
     setState(() {
@@ -103,13 +107,28 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            TNDButton.primary(
+            FCButton.primary(
+              text: 'Primary',
+              onPressed: () {},
+            ),
+            FCButton.secondary(
+              text: 'Secondary',
+              onPressed: () {},
+            ),
+            FCButton.secondary(
+              text: 'Secondary',
+              prefix: const Icon(Icons.exposure_minus_1),
+              suffix: const Icon(Icons.add),
+              onPressed: () {},
+            ),
+            FCButton.text(
               text: 'Text',
               onPressed: () {},
             ),
-            TNDButton.secondary(
-              text: 'Text',
-              onPressed: () {},
+            FCTextField(
+              controller: _controller,
+              focusNode: _focusNode,
+              onChanged: (value) {},
             ),
           ],
         ),
