@@ -105,62 +105,75 @@ class _FCTextFieldState extends State<FCTextField> {
   @override
   Widget build(BuildContext context) {
     _setFocusListener();
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        minHeight: widget.fieldSize.height,
-      ),
-      child: TextFormField(
-        key: widget.key,
-        enabled: !widget.disable,
-        readOnly: widget.readOnly,
-        obscureText: widget.obscureText,
-        obscuringCharacter: widget.obscuringCharacter,
-        controller: widget.controller,
-        focusNode: widget.focusNode,
-        textInputAction: widget.textInputAction,
-        onChanged: (value) async {
-          widget.onChanged.call(value);
 
-          // if (widget.validator != null) {
-          //   final newStatus = await widget.validator!(value);
-          //   if (newStatus != _status) {
-          //     setState(() {
-          //       _status = newStatus;
-          //       _setBorderColor();
-          //     });
-          //   }
-          // }
-        },
-        onFieldSubmitted: widget.onSubmitted,
-        maxLines: widget.maxLines,
-        minLines: widget.minLines,
-        textAlign: widget.textAlign ?? TextAlign.start,
-        style: _theme.textTheme.bodyLarge?.copyWith(
-            // color: widget.disable
-            //     ? tdsColor!.neutral1300
-            //     : tdsColor!.neutral1900,
-            ),
-        cursorWidth: 1,
-        inputFormatters: widget.inputFormatters,
-        keyboardType: widget.keyboardType ?? TextInputType.text,
-        decoration: InputDecoration(
-          isDense: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: _borderColor ?? Colors.grey),
+    final OutlineInputBorder outlineBorder = _border;
+
+    return TextFormField(
+      key: widget.key,
+      enabled: !widget.disable,
+      readOnly: widget.readOnly,
+      obscureText: widget.obscureText,
+      obscuringCharacter: widget.obscuringCharacter,
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      textInputAction: widget.textInputAction,
+      onChanged: (value) async {
+        widget.onChanged.call(value);
+
+        // if (widget.validator != null) {
+        //   final newStatus = await widget.validator!(value);
+        //   if (newStatus != _status) {
+        //     setState(() {
+        //       _status = newStatus;
+        //       _setBorderColor();
+        //     });
+        //   }
+        // }
+      },
+      onFieldSubmitted: widget.onSubmitted,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      textAlign: widget.textAlign ?? TextAlign.start,
+      style: _theme.textTheme.bodyLarge?.copyWith(
+          // color: widget.disable
+          //     ? tdsColor!.neutral1300
+          //     : tdsColor!.neutral1900,
           ),
-          hintText: widget.hint,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: widget.fieldSize.verticalPadding,
+      cursorWidth: 1,
+      inputFormatters: widget.inputFormatters,
+      keyboardType: widget.keyboardType ?? TextInputType.text,
+      decoration: InputDecoration(
+        label: widget.label != null ? Text(widget.label!) : null,
+        isDense: true,
+        enabledBorder: outlineBorder,
+        focusedBorder: outlineBorder,
+        focusedErrorBorder: outlineBorder,
+        border: outlineBorder,
+        disabledBorder: outlineBorder.copyWith(
+          borderSide: outlineBorder.borderSide.copyWith(
+            color: Colors.transparent,
           ),
-          prefixIcon: widget.prefix,
-          suffixIcon: widget.suffix,
         ),
-        onTap: widget.onTap,
+        filled: true,
+        fillColor: widget.disable ? Color(0xFF004269).withOpacity(0.07) : Colors.transparent,
+        hintText: widget.hint,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: widget.fieldSize.verticalPadding,
+        ),
+        prefixIcon: widget.prefix,
+        suffixIcon: widget.suffix,
       ),
+      onTap: widget.onTap,
     );
   }
+
+  OutlineInputBorder get _border => OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: _borderColor ?? Colors.green,
+        ),
+      );
 
   @override
   void didUpdateWidget(covariant FCTextField oldWidget) {
@@ -192,7 +205,7 @@ extension FCFieldStateExtension on FCFieldState {
       case FCFieldState.success:
         return Colors.green;
       case FCFieldState.none:
-        return Colors.grey;
+        return Color(0xFF004269).withOpacity(0.28);
     }
   }
 }
@@ -204,23 +217,12 @@ enum FCFieldSize {
 }
 
 extension FCFieldSizeExtension on FCFieldSize {
-  double get height {
-    switch (this) {
-      case FCFieldSize.medium:
-        return 44;
-      case FCFieldSize.small:
-        return 40;
-      case FCFieldSize.extraSmall:
-        return 36;
-    }
-  }
-
   double get verticalPadding {
     switch (this) {
       case FCFieldSize.medium:
-        return 12;
+        return 16;
       case FCFieldSize.small:
-        return 8;
+        return 12;
       case FCFieldSize.extraSmall:
         return 4;
     }
