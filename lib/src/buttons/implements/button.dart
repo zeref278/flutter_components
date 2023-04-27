@@ -117,7 +117,7 @@ class FCButton extends StatelessWidget {
       elevation: MaterialStateProperty.all(0),
       shape: MaterialStateProperty.all(
         RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(buttonSize.borderRadius),
         ),
       ),
       textStyle:
@@ -278,16 +278,29 @@ enum FCButtonSize {
 }
 
 extension FCButtonSizeExtension on FCButtonSize {
+  double get borderRadius {
+    switch (this) {
+      case FCButtonSize.large:
+        return 12;
+      case FCButtonSize.medium:
+        return 12;
+      case FCButtonSize.small:
+        return 8;
+      case FCButtonSize.compact:
+        return 8;
+    }
+  }
+
   double get height {
     switch (this) {
       case FCButtonSize.large:
-        return 48;
+        return 56;
       case FCButtonSize.medium:
-        return 40;
+        return 48;
       case FCButtonSize.small:
-        return 32;
+        return 40;
       case FCButtonSize.compact:
-        return 24;
+        return 35;
     }
   }
 }
