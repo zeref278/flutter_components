@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_components/src/spacing/spacing.dart';
 
 class FCTextField extends StatefulWidget {
   const FCTextField({
@@ -25,6 +28,9 @@ class FCTextField extends StatefulWidget {
     this.obscureText = false,
     this.obscuringCharacter = '●',
     this.textInputAction,
+    this.validator,
+    this.errorMessage,
+    this.warningMessage,
     super.key,
   });
 
@@ -48,10 +54,11 @@ class FCTextField extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onTapOutside;
   final bool obscureText;
-
   final String obscuringCharacter;
-
   final TextInputAction? textInputAction;
+  final FutureOr<FCFieldState> Function(String)? validator;
+  final String? errorMessage;
+  final String? warningMessage;
 
   @override
   State<FCTextField> createState() => _FCTextFieldState();
@@ -104,74 +111,40 @@ class _FCTextFieldState extends State<FCTextField> {
 
   @override
   Widget build(BuildContext context) {
+    if (!_isHasListener) {
+      _borderColor = _state.color(_theme);
+    }
     _setFocusListener();
 
-    final OutlineInputBorder outlineBorder = _border;
-
-    return TextFormField(
-      key: widget.key,
-      enabled: !widget.disable,
-      readOnly: widget.readOnly,
-      obscureText: widget.obscureText,
-      obscuringCharacter: widget.obscuringCharacter,
-      controller: widget.controller,
-      focusNode: widget.focusNode,
-      textInputAction: widget.textInputAction,
-      onChanged: (value) async {
-        widget.onChanged.call(value);
-
-        // if (widget.validator != null) {
-        //   final newStatus = await widget.validator!(value);
-        //   if (newStatus != _status) {
-        //     setState(() {
-        //       _status = newStatus;
-        //       _setBorderColor();
-        //     });
-        //   }
-        // }
-      },
-      onFieldSubmitted: widget.onSubmitted,
-      maxLines: widget.maxLines,
-      minLines: widget.minLines,
-      textAlign: widget.textAlign ?? TextAlign.start,
-      style: _theme.textTheme.bodyLarge?.copyWith(
-          // color: widget.disable
-          //     ? tdsColor!.neutral1300
-          //     : tdsColor!.neutral1900,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (widget.label != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              widget.label!,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
           ),
-      cursorWidth: 1,
-      inputFormatters: widget.inputFormatters,
-      keyboardType: widget.keyboardType ?? TextInputType.text,
-      decoration: InputDecoration(
-        label: widget.label != null ? Text(widget.label!) : null,
-        isDense: true,
-        enabledBorder: outlineBorder,
-        focusedBorder: outlineBorder,
-        focusedErrorBorder: outlineBorder,
-        border: outlineBorder,
-        disabledBorder: outlineBorder.copyWith(
-          borderSide: outlineBorder.borderSide.copyWith(
-            color: Colors.transparent,
+        _buildField(context),
+        if (_state != FCFieldState.none)
+          FCValidatorMessage(
+            state: _state,
+            errorMsg: widget.errorMessage,
+            warningMsg: widget.warningMessage,
           ),
-        ),
-        filled: true,
-        fillColor: widget.disable ? Color(0xFF004269).withOpacity(0.07) : Colors.transparent,
-        hintText: widget.hint,
-        contentPadding: EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: widget.fieldSize.verticalPadding,
-        ),
-        prefixIcon: widget.prefix,
-        suffixIcon: widget.suffix,
-      ),
-      onTap: widget.onTap,
+      ],
     );
   }
 
   OutlineInputBorder get _border => OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(
-          color: _borderColor ?? Colors.green,
+          color: _borderColor ?? Color(0xFF004269).withOpacity(0.28),
         ),
       );
 
@@ -186,12 +159,73 @@ class _FCTextFieldState extends State<FCTextField> {
       });
     }
   }
+
+  Widget _buildField(BuildContext context) {
+    final border = _border;
+    return TextFormField(
+      key: widget.key,
+      enabled: !widget.disable,
+      readOnly: widget.readOnly,
+      obscureText: widget.obscureText,
+      obscuringCharacter: widget.obscuringCharacter,
+      controller: widget.controller,
+      focusNode: widget.focusNode,
+      textInputAction: widget.textInputAction,
+      onChanged: (value) async {
+        widget.onChanged.call(value);
+
+        if (widget.validator != null) {
+          final newStatus = await widget.validator!(value);
+          if (newStatus != _state) {
+            setState(() {
+              _state = newStatus;
+              _setBorderColor();
+            });
+          }
+        }
+      },
+      onFieldSubmitted: widget.onSubmitted,
+      maxLines: widget.maxLines,
+      minLines: widget.minLines,
+      textAlign: widget.textAlign ?? TextAlign.start,
+      style: _theme.textTheme.bodyMedium?.copyWith(),
+      cursorWidth: 1,
+      inputFormatters: widget.inputFormatters,
+      keyboardType: widget.keyboardType ?? TextInputType.text,
+      decoration: InputDecoration(
+        isDense: true,
+        enabledBorder: border,
+        focusedBorder: border,
+        focusedErrorBorder: border,
+        border: border,
+        disabledBorder: border.copyWith(
+          borderSide: border.borderSide.copyWith(
+            color: Colors.transparent,
+          ),
+        ),
+        filled: true,
+        fillColor: widget.disable
+            ? const Color(0xFF004269).withOpacity(0.07)
+            : Colors.transparent,
+        hintText: widget.hint,
+        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).hintColor,
+            ),
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: widget.fieldSize.verticalPadding,
+        ),
+        prefixIcon: widget.prefix,
+        suffixIcon: widget.suffix,
+      ),
+      onTap: widget.onTap,
+    );
+  }
 }
 
 enum FCFieldState {
   error,
   warning,
-  success,
   none,
 }
 
@@ -201,9 +235,7 @@ extension FCFieldStateExtension on FCFieldState {
       case FCFieldState.error:
         return theme.colorScheme.error;
       case FCFieldState.warning:
-        return theme.colorScheme.tertiary;
-      case FCFieldState.success:
-        return Colors.green;
+        return Colors.amber;
       case FCFieldState.none:
         return Color(0xFF004269).withOpacity(0.28);
     }
@@ -226,5 +258,90 @@ extension FCFieldSizeExtension on FCFieldSize {
       case FCFieldSize.extraSmall:
         return 4;
     }
+  }
+}
+
+class FCValidatorMessage extends StatelessWidget {
+  const FCValidatorMessage({
+    required this.state,
+    this.successMsg,
+    this.errorMsg,
+    this.warningMsg,
+    this.padding,
+    super.key,
+  });
+
+  final FCFieldState state;
+
+  /// Message displayed when validator return success
+  final String? successMsg;
+
+  /// Error displayed when validator return error
+  final String? errorMsg;
+
+  /// Message displayed when validator return warning
+  final String? warningMsg;
+
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
+    final Widget msg;
+
+    switch (state) {
+      case FCFieldState.error:
+        msg = Text.rich(
+          TextSpan(
+            children: [
+              WidgetSpan(
+                child: Icon(
+                  Icons.close,
+                  color: Theme.of(context).colorScheme.error,
+                  size: 18,
+                ),
+              ),
+              const WidgetSpan(child: FCSpacing.horizontalSpacing6),
+              TextSpan(
+                text: errorMsg ?? 'Error value',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+            ],
+          ),
+        );
+        break;
+      case FCFieldState.warning:
+        msg = Text.rich(
+          TextSpan(
+            children: [
+              WidgetSpan(
+                child: Icon(
+                  Icons.warning_rounded,
+                  color: Colors.amber,
+                  size: 18,
+                ),
+              ),
+              const WidgetSpan(child: FCSpacing.horizontalSpacing6),
+              TextSpan(
+                text: warningMsg ?? 'Warning value',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: Colors.amber,
+                ),
+              ),
+            ],
+          ),
+        );
+        break;
+      default:
+        msg = const SizedBox();
+    }
+
+    return Padding(
+      padding: padding ?? const EdgeInsets.only(top: 4),
+      child: msg,
+    );
   }
 }
