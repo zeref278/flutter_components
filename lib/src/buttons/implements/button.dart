@@ -108,7 +108,7 @@ class FCButton extends StatelessWidget {
   }
 
   ButtonStyle style(BuildContext context) {
-    return ButtonStyle(
+    return Theme.of(context).elevatedButtonTheme.style!.copyWith(
       padding: MaterialStateProperty.all(
         const EdgeInsets.symmetric(
           horizontal: 16,
