@@ -26,7 +26,7 @@ class FCTextField extends StatefulWidget {
     this.onTap,
     this.onTapOutside,
     this.obscureText = false,
-    this.obscuringCharacter = '●',
+    this.obscuringCharacter = '•',
     this.textInputAction,
     this.validator,
     this.errorMessage,
@@ -221,6 +221,13 @@ class _FCTextFieldState extends State<FCTextField> {
         counterStyle: const TextStyle(height: 0),
       ),
       onTap: widget.onTap,
+      onTapOutside: (_) {
+        (widget.onTapOutside ??
+                () {
+                  FocusScope.of(context).unfocus();
+                })
+            .call();
+      },
     );
   }
 }
