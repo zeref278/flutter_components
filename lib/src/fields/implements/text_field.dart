@@ -217,6 +217,8 @@ class _FCTextFieldState extends State<FCTextField> {
         ),
         prefixIcon: widget.prefix,
         suffixIcon: widget.suffix,
+        counterText: '',
+        counterStyle: const TextStyle(height: 0),
       ),
       onTap: widget.onTap,
     );

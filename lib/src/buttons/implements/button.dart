@@ -12,6 +12,7 @@ class FCButton extends StatelessWidget {
     this.borderColor,
     this.backgroundColor,
     this.foregroundColor,
+    this.fontWeight,
     super.key,
   });
 
@@ -23,6 +24,7 @@ class FCButton extends StatelessWidget {
     Widget? prefix,
     Widget? suffix,
     Color? foregroundColor,
+    FontWeight? fontWeight,
     Key? key,
   }) = _FCPrimaryButton;
 
@@ -33,6 +35,7 @@ class FCButton extends StatelessWidget {
     VoidCallback? onPressed,
     Widget? prefix,
     Widget? suffix,
+    FontWeight? fontWeight,
     Key? key,
   }) = _FCSecondaryButton;
 
@@ -43,6 +46,7 @@ class FCButton extends StatelessWidget {
     VoidCallback? onPressed,
     Widget? prefix,
     Widget? suffix,
+    FontWeight? fontWeight,
     Key? key,
   }) = _FCTextButton;
 
@@ -56,6 +60,7 @@ class FCButton extends StatelessWidget {
     Color? borderColor,
     Color? backgroundColor,
     Color? foregroundColor,
+    FontWeight? fontWeight,
     Key? key,
   }) = _FCCustomButton;
 
@@ -81,6 +86,8 @@ class FCButton extends StatelessWidget {
 
   /// Foreground color customization
   final Color? foregroundColor;
+
+  final FontWeight? fontWeight;
 
   @override
   Widget build(BuildContext context) {
@@ -121,8 +128,11 @@ class FCButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(buttonSize.borderRadius),
             ),
           ),
-          textStyle:
-              MaterialStateProperty.all(Theme.of(context).textTheme.labelLarge),
+          textStyle: MaterialStateProperty.all(
+            Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: fontWeight ?? FontWeight.w500,
+                ),
+          ),
         );
   }
 }
@@ -135,6 +145,7 @@ class _FCPrimaryButton extends FCButton {
     super.prefix,
     super.suffix,
     super.foregroundColor,
+    super.fontWeight,
     super.key,
   }) : super._();
 
@@ -159,6 +170,7 @@ class _FCSecondaryButton extends FCButton {
     super.onPressed,
     super.prefix,
     super.suffix,
+    super.fontWeight,
     super.key,
   }) : super._();
 
@@ -198,6 +210,7 @@ class _FCTextButton extends FCButton {
     super.onPressed,
     super.prefix,
     super.suffix,
+    super.fontWeight,
     super.key,
   }) : super._();
 
@@ -243,6 +256,7 @@ class _FCCustomButton extends FCButton {
     super.borderColor,
     super.backgroundColor,
     super.foregroundColor,
+    super.fontWeight,
     super.key,
   }) : super._();
 
