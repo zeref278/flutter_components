@@ -22,6 +22,7 @@ class FCButton extends StatelessWidget {
     VoidCallback? onPressed,
     Widget? prefix,
     Widget? suffix,
+    Color? foregroundColor,
     Key? key,
   }) = _FCPrimaryButton;
 
@@ -109,20 +110,20 @@ class FCButton extends StatelessWidget {
 
   ButtonStyle style(BuildContext context) {
     return Theme.of(context).elevatedButtonTheme.style!.copyWith(
-      padding: MaterialStateProperty.all(
-        const EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
-      ),
-      elevation: MaterialStateProperty.all(0),
-      shape: MaterialStateProperty.all(
-        RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(buttonSize.borderRadius),
-        ),
-      ),
-      textStyle:
-          MaterialStateProperty.all(Theme.of(context).textTheme.labelLarge),
-    );
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+          ),
+          elevation: MaterialStateProperty.all(0),
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(buttonSize.borderRadius),
+            ),
+          ),
+          textStyle:
+              MaterialStateProperty.all(Theme.of(context).textTheme.labelLarge),
+        );
   }
 }
 
@@ -133,6 +134,7 @@ class _FCPrimaryButton extends FCButton {
     super.onPressed,
     super.prefix,
     super.suffix,
+    super.foregroundColor,
     super.key,
   }) : super._();
 
@@ -142,6 +144,9 @@ class _FCPrimaryButton extends FCButton {
     return superButtonStyle.copyWith(
       backgroundColor: MaterialStatePropertyAll(
         Theme.of(context).primaryColor,
+      ),
+      foregroundColor: MaterialStatePropertyAll(
+        foregroundColor,
       ),
     );
   }
